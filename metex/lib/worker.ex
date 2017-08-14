@@ -1,4 +1,12 @@
 defmodule Metex.Worker do
+  def loop do
+    receive do
+      {sender_pid, location} -> send(sender_pid, {:ok, temperature_of(location)})
+      _ -> IO.puts "Don't know how to process this message"
+    end
+    loop()
+  end
+
   def temperature_of(location) do
     result = location
       |> url_for
@@ -38,3 +46,9 @@ defmodule Metex.Worker do
     "7ecec6f6626e543d3f80f86ef021ad21"
   end
 end
+
+# cities = ["Singapore", "Monaco", "Belfast", "London"]
+# cities |> Enum.each(fn city ->
+#   pid = spawn(Metex.Worker, :loop, [])
+#   send(pid, {self, city})
+# end)
